@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="description" content="TG Petrol Pump Trading — Industrial fuel dispensers, spare parts, and accessories." />
+  <title>TG Petrol Pump Trading — Fuel Equipment</title>
+  <!-- Prevent theme flash -->
+  <script>(function(){var t=localStorage.getItem('tg_theme')||'dark';if(t==='light')document.documentElement.classList.add('light-theme');}());</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/store.css" />
+</head>
+<body>
+
+  <!-- ══ HEADER ══════════════════════════════════════════ -->
+  <header id="siteHeader">
+
+    <!-- Main nav row -->
+    <div class="nav-inner">
+
+      <!-- Logo -->
+      <a href="/" class="logo" aria-label="TG Petrol Pump — Home">
+        <div class="logo-mark" id="logoMark">
+          <img id="storeLogo" src="" alt="" hidden />
+          <span class="logo-initials" aria-hidden="true">TG</span>
+        </div>
+        <span class="logo-text">TG Petrol Pump</span>
+      </a>
+
+      <!-- Search bar — grows to fill available space -->
+      <div class="nav-search" role="search">
+        <svg class="search-icon" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input
+          type="search"
+          id="searchInput"
+          placeholder="Search products…"
+          aria-label="Search products"
+          autocomplete="off"
+          maxlength="100"
+        />
+      </div>
+
+      <!-- Desktop: category tabs (hidden on mobile — shown in filter bar below) -->
+      <div class="nav-cats" role="tablist" aria-label="Filter by category">
+        <button class="cat-btn active" role="tab" aria-selected="true"  data-cat="all">All</button>
+        <button class="cat-btn"        role="tab" aria-selected="false" data-cat="fuel-dispensers">Fuel Dispensers</button>
+        <button class="cat-btn"        role="tab" aria-selected="false" data-cat="spare-parts">Spare Parts</button>
+        <button class="cat-btn"        role="tab" aria-selected="false" data-cat="accessories">Accessories</button>
+      </div>
+
+      <!-- Currency toggle -->
+      <button class="currency-btn" id="currencyToggle" aria-label="Switch display currency">
+        <span class="currency-label" id="currencyLabel">$ USD</span>
+        <span class="currency-sep">⇄</span>
+        <span class="currency-alt"  id="currencyAlt">₱ PHP</span>
+      </button>
+
+      <!-- Admin link — desktop only -->
+      <a href="/admin/" class="nav-admin" aria-label="Admin panel">Admin ↗</a>
+    </div>
+
+    <!-- Mobile: horizontal scrolling category filter bar -->
+    <div class="filter-bar" role="tablist" aria-label="Filter by category">
+      <button class="cat-btn active" role="tab" aria-selected="true"  data-cat="all">All</button>
+      <button class="cat-btn"        role="tab" aria-selected="false" data-cat="fuel-dispensers">Dispensers</button>
+      <button class="cat-btn"        role="tab" aria-selected="false" data-cat="spare-parts">Spare Parts</button>
+      <button class="cat-btn"        role="tab" aria-selected="false" data-cat="accessories">Accessories</button>
+    </div>
+
+  </header>
+
+  <!-- ══ HERO ════════════════════════════════════════════ -->
+  <section class="hero" aria-label="Welcome">
+    <div class="hero-inner">
+      <p class="hero-eyebrow">Professional Fuel Equipment</p>
+      <h1>PRECISION<br><span class="hero-accent">DISPENSING</span><br>SOLUTIONS</h1>
+      <p class="hero-desc">Industrial-grade fuel dispensers, spare parts and accessories for petrol stations. Built to last, built to perform.</p>
+      <div class="hero-stats" aria-label="Company highlights">
+        <div class="hero-stat">
+          <span class="hero-num" id="statProducts">—</span>
+          <span class="hero-lbl">Products</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-num">4+</span>
+          <span class="hero-lbl">Years Experience</span>
+        </div>
+        <div class="hero-stat">
+          <span class="hero-num">400+</span>
+          <span class="hero-lbl">Installations</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CATALOGUE ═══════════════════════════════════════ -->
+  <main class="catalogue" id="catalogue" aria-label="Product catalogue">
+    <div class="catalogue-header">
+      <h2 class="catalogue-title">Product Catalogue</h2>
+      <div class="catalogue-controls">
+        <span class="result-count" id="resultsCount" aria-live="polite"></span>
+        <select class="sort-select" id="sortSelect" aria-label="Sort products">
+          <option value="newest">Newest First</option>
+          <option value="price-asc">Price: Low → High</option>
+          <option value="price-desc">Price: High → Low</option>
+          <option value="popular">Most Viewed</option>
+          <option value="featured">Featured First</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="product-grid" id="productsGrid" aria-label="Products">
+      <!-- Skeleton loaders -->
+      <div class="skeleton" aria-hidden="true"><div class="sk-img"></div><div class="sk-body"><div class="sk-line w70"></div><div class="sk-line w90"></div><div class="sk-line w50"></div></div></div>
+      <div class="skeleton" aria-hidden="true"><div class="sk-img"></div><div class="sk-body"><div class="sk-line w60"></div><div class="sk-line w85"></div><div class="sk-line w40"></div></div></div>
+      <div class="skeleton" aria-hidden="true"><div class="sk-img"></div><div class="sk-body"><div class="sk-line w75"></div><div class="sk-line w88"></div><div class="sk-line w55"></div></div></div>
+    </div>
+  </main>
+
+  <!-- ══ PRODUCT MODAL ════════════════════════════════════ -->
+  <div id="modalOverlay" class="modal-overlay"
+       role="dialog" aria-modal="true"
+       aria-labelledby="modalName" aria-hidden="true">
+    <div class="modal" id="modal">
+      <button class="modal-close" id="modalClose" aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+
+      <div class="modal-body">
+        <!-- Gallery -->
+        <div class="modal-gallery">
+          <div class="modal-img-wrap">
+            <img id="modalMainImg" src="" alt="" loading="lazy" />
+            <div class="modal-no-img" id="modalNoImg" aria-hidden="true">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="currentColor" opacity="0.25"><path d="M4 16l4.586-4.586a2 2 0 0 1 2.828 0L16 16m-2-2 1.586-1.586a2 2 0 0 1 2.828 0L20 14m-6-6h.01M6 20h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z"/></svg>
+            </div>
+          </div>
+          <div class="modal-thumbs" id="modalThumbs" role="list" aria-label="Product images"></div>
+          <div class="modal-video" id="modalVideo" hidden>
+            <p class="modal-video-label">▶ Product Video</p>
+            <video id="modalVideoEl" controls preload="none" aria-label="Product video"></video>
+          </div>
+        </div>
+
+        <!-- Info -->
+        <div class="modal-info">
+          <div class="modal-badges" id="modalBadges"></div>
+          <h2 class="modal-name" id="modalName">—</h2>
+          <div class="modal-price-block" id="modalPriceRow"></div>
+          <div class="modal-stock" id="modalStock" aria-live="polite"></div>
+          <div class="modal-desc"  id="modalDesc"></div>
+          <div id="modalSpecs"></div>
+          <div class="modal-actions">
+            <button class="modal-cta"      id="modalInquiryBtn">📩 Send Inquiry</button>
+            <button class="modal-cta-sec"  id="modalPhoneBtn">📞 Call Us</button>
+            <button class="modal-cta-sec"  id="modalShareBtn">🔗 Share</button>
+          </div>
+        </div>
+      </div><!-- /modal-body -->
+    </div><!-- /modal -->
+  </div><!-- /modal-overlay -->
+
+  <!-- ══ TOAST ════════════════════════════════════════════ -->
+  <div class="toast-wrap" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- ══ FOOTER ═══════════════════════════════════════════ -->
+  <footer class="site-footer">
+    <p>© 2026 TG Petrol Pump Trading &mdash;
+      <a href="mailto:linaytimothy@gmail.com">Contact me:linayacuyan@gmail.com</a>
+    </p>
+  </footer>
+
+  <script type="module" src="/js/store.js"></script>
+</body>
+</html>

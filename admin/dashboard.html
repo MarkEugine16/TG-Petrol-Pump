@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Dashboard — TG Admin</title>
+  <script>(function(){var t=localStorage.getItem('tg_theme')||'dark';if(t==='light')document.documentElement.classList.add('light-theme');}());</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/admin/css/admin.css" />
+</head>
+<body class="dash-body">
+
+  <!-- ════════════════════════════════════════════════════
+       MOBILE TOPBAR — always visible on small screens,
+       lives OUTSIDE the sidebar so it's never off-screen
+  ════════════════════════════════════════════════════ -->
+  <div class="mobile-topbar" id="mobileTopbar" role="banner">
+    <button class="hamburger-btn" id="sidebarToggle"
+            aria-label="Open navigation menu"
+            aria-expanded="false"
+            aria-controls="adminSidebar">
+      <span></span><span></span><span></span>
+    </button>
+    <span class="mobile-brand">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true">
+        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+      </svg>
+      TG Admin
+    </span>
+    <div class="mobile-topbar-right">
+      <button class="currency-toggle-admin currency-toggle-topbar" id="adminCurrencyToggleTop">$ USD</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       SIDEBAR OVERLAY — dims content when sidebar open
+  ════════════════════════════════════════════════════ -->
+  <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+
+  <!-- ════════════════════════════════════════════════════
+       SIDEBAR
+  ════════════════════════════════════════════════════ -->
+  <aside class="sidebar" id="adminSidebar" role="navigation" aria-label="Admin navigation">
+
+    <!-- Sidebar header -->
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="var(--accent)" aria-hidden="true">
+          <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+        </svg>
+        <span>TG Admin</span>
+      </div>
+      <button class="sidebar-close-btn" id="sidebarClose" aria-label="Close navigation menu">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Nav links -->
+    <nav class="sidebar-nav">
+      <span class="sidebar-section-label">Overview</span>
+      <button class="sidebar-link active" data-page="dashboard">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        Dashboard
+      </button>
+
+      <span class="sidebar-section-label">Catalogue</span>
+      <button class="sidebar-link" data-page="products">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 6h-2.18c.07-.44.18-.88.18-1a3 3 0 0 0-6 0c0 .12.11.56.18 1H8a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zm-7-2a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>
+        All Products
+      </button>
+      <button class="sidebar-link" data-page="add-product">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+        Add Product
+      </button>
+
+      <span class="sidebar-section-label">System</span>
+      <button class="sidebar-link" data-page="settings">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.25 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        Settings
+      </button>
+      <a class="sidebar-link" href="/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 19H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+        View Storefront
+      </a>
+    </nav>
+
+    <!-- Footer -->
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <span class="sidebar-user-label">Logged in as</span>
+        <strong id="sidebarEmail">—</strong>
+      </div>
+      <button class="currency-toggle-admin" id="adminCurrencyToggle">$ USD → ₱ PHP</button>
+      <button class="logout-btn" id="logoutBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- ════════════════════════════════════════════════════
+       MAIN CONTENT
+  ════════════════════════════════════════════════════ -->
+  <main class="main-content" role="main" id="mainContent">
+
+    <!-- ── DASHBOARD ── -->
+    <section class="page-section active" id="page-dashboard" aria-label="Dashboard">
+      <div class="page-header">
+        <div class="page-header-text">
+          <h1 class="page-title">Dashboard</h1>
+          <p class="page-subtitle">Welcome back. Here's your catalogue overview.</p>
+        </div>
+        <button class="btn btn-primary" data-nav="add-product">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+          Add Product
+        </button>
+      </div>
+
+      <div class="stats-row" id="statsRow">
+        <div class="stat-card">
+          <div class="stat-card-label">Total Products</div>
+          <div class="stat-card-val accent" id="sTotal">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">In Stock</div>
+          <div class="stat-card-val green" id="sIn">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">Out of Stock</div>
+          <div class="stat-card-val red" id="sOut">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">Featured</div>
+          <div class="stat-card-val blue" id="sFeat">—</div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-header">
+          <div class="form-card-title">Recent Products</div>
+        </div>
+        <div class="table-wrap">
+          <table aria-label="Recent products">
+            <thead>
+              <tr>
+                <th class="col-thumb desktop-only"></th>
+                <th>Product</th>
+                <th class="hide-mobile">Category</th>
+                <th>Price</th>
+                <th class="hide-mobile">Stock</th>
+                <th>Status</th>
+                <th class="hide-mobile">Views</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="dashTableBody">
+              <tr><td colspan="8" class="table-empty">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── ALL PRODUCTS ── -->
+    <section class="page-section" id="page-products" aria-label="All products">
+      <div class="page-header">
+        <div class="page-header-text">
+          <h1 class="page-title">All Products</h1>
+          <p class="page-subtitle" id="allProductsCount">—</p>
+        </div>
+        <div class="page-header-controls">
+          <div class="admin-search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input type="search" id="adminSearch" placeholder="Search products…"
+                   aria-label="Search products" maxlength="100" />
+          </div>
+          <select class="form-select" id="catFilter" aria-label="Filter by category">
+            <option value="">All Categories</option>
+            <option value="fuel-dispensers">Fuel Dispensers</option>
+            <option value="spare-parts">Spare Parts</option>
+            <option value="accessories">Accessories</option>
+          </select>
+          <button class="btn btn-primary" data-nav="add-product">+ Add Product</button>
+        </div>
+      </div>
+      <div class="form-card">
+        <div class="table-wrap">
+          <table aria-label="All products">
+            <thead>
+              <tr>
+                <th class="col-thumb desktop-only"></th>
+                <th>Product</th>
+                <th class="hide-mobile">Category</th>
+                <th>Price</th>
+                <th class="hide-mobile">Stock</th>
+                <th>Status</th>
+                <th class="hide-mobile">Featured</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="allTableBody">
+              <tr><td colspan="8" class="table-empty">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── ADD / EDIT PRODUCT ── -->
+    <section class="page-section" id="page-add-product" aria-label="Product form">
+      <div class="page-header">
+        <div class="page-header-text">
+          <h1 class="page-title" id="formPageTitle">Add Product</h1>
+          <p class="page-subtitle">Fill in the details below</p>
+        </div>
+        <button class="btn btn-ghost" data-nav="products">← Back</button>
+      </div>
+
+      <input type="hidden" id="editProductId" />
+
+      <div class="alert alert-success" id="formSuccess" role="status" hidden>✓ Product saved successfully.</div>
+      <div class="alert alert-error"   id="formError"   role="alert"  hidden></div>
+
+      <div class="form-card">
+        <div class="form-card-title">📦 Basic Information</div>
+        <div class="form-grid">
+          <div class="form-group form-full">
+            <label class="form-label" for="fName">Product Name *</label>
+            <input class="form-input" id="fName" type="text"
+                   placeholder="e.g. TG-500 Dual Nozzle Fuel Dispenser"
+                   maxlength="200" required autocomplete="off" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="fCat">Category *</label>
+            <select class="form-select" id="fCat" required>
+              <option value="">Select category…</option>
+              <option value="fuel-dispensers">Fuel Dispensers</option>
+              <option value="spare-parts">Spare Parts</option>
+              <option value="accessories">Accessories</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="fAvail">Availability</label>
+            <select class="form-select" id="fAvail">
+              <option value="in-stock">In Stock</option>
+              <option value="out-of-stock">Out of Stock</option>
+              <option value="coming-soon">Coming Soon</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="fPrice">Price *</label>
+            <div class="price-input-row">
+              <input class="form-input" id="fPrice" type="number"
+                     min="0" step="0.01" placeholder="0.00" required />
+              <select class="form-select price-currency-select" id="fPriceCurrency"
+                      aria-label="Price currency">
+                <option value="USD">$ USD</option>
+                <option value="PHP">₱ PHP</option>
+              </select>
+            </div>
+            <p class="form-hint" id="priceConvertHint"></p>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="fDiscount">Discount %</label>
+            <input class="form-input" id="fDiscount" type="number"
+                   min="0" max="100" step="1" placeholder="0" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="fStock">Stock Quantity</label>
+            <input class="form-input" id="fStock" type="number"
+                   min="0" step="1" placeholder="0" />
+          </div>
+          <div class="form-group form-featured-row">
+            <label class="checkbox-label">
+              <input type="checkbox" id="fFeatured" />
+              <span>Mark as Featured</span>
+            </label>
+          </div>
+          <div class="form-group form-full">
+            <label class="form-label" for="fDesc">Description</label>
+            <textarea class="form-textarea" id="fDesc" rows="4"
+                      placeholder="Detailed product description…"
+                      maxlength="10000"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-title">🔧 Specifications</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="specFlowRate">Flow Rate</label>
+            <input class="form-input" id="specFlowRate" type="text" placeholder="50L/min" maxlength="80" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="specPower">Power Supply</label>
+            <input class="form-input" id="specPower" type="text" placeholder="220V / 50Hz" maxlength="80" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="specWeight">Weight</label>
+            <input class="form-input" id="specWeight" type="text" placeholder="120kg" maxlength="80" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="specDims">Dimensions</label>
+            <input class="form-input" id="specDims" type="text" placeholder="500×400×1800mm" maxlength="80" />
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-title">🖼 Product Images</div>
+        <div class="upload-zone" id="imgZone">
+          <input type="file" id="imgFiles"
+                 accept="image/jpeg,image/png,image/webp,image/gif"
+                 multiple aria-label="Upload product images" />
+          <div class="upload-zone-icon" aria-hidden="true">📷</div>
+          <p class="upload-zone-main"><strong>Click to upload</strong> or drag &amp; drop</p>
+          <p class="upload-zone-hint">JPEG, PNG, WEBP, GIF — max 5 MB each, up to 10 files</p>
+          <p class="upload-zone-status" id="imgZoneLabel" aria-live="polite"></p>
+        </div>
+        <div class="progress-bar-wrap" id="imgProgress" hidden>
+          <div class="progress-bar-fill" id="imgProgressFill"></div>
+        </div>
+        <div class="upload-preview-row" id="imgPreviews" aria-label="Image previews"></div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-title">🎥 Product Video</div>
+        <div class="upload-zone" id="vidZone">
+          <input type="file" id="vidFile"
+                 accept="video/mp4,video/webm,video/quicktime"
+                 aria-label="Upload product video" />
+          <div class="upload-zone-icon" aria-hidden="true">🎬</div>
+          <p class="upload-zone-main"><strong>Click to upload</strong> a video</p>
+          <p class="upload-zone-hint">MP4, WEBM, MOV — max 100 MB</p>
+          <p class="upload-zone-status" id="vidZoneLabel" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-ghost" id="resetFormBtn">Clear</button>
+        <button class="btn btn-primary" id="saveProductBtn">
+          <span id="saveBtnText">Save Product</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ── SETTINGS ── -->
+    <section class="page-section" id="page-settings" aria-label="Settings">
+      <div class="page-header">
+        <div class="page-header-text">
+          <h1 class="page-title">Settings</h1>
+          <p class="page-subtitle">Theme, currency, contact and logo.</p>
+        </div>
+      </div>
+
+      <div class="alert alert-success" id="settingsSuccess" role="status" hidden>✓ Settings saved.</div>
+
+      <div class="form-card">
+        <div class="form-card-title">🎨 Theme</div>
+        <p class="form-card-desc">Applies to both the storefront and admin panel instantly.</p>
+        <div class="theme-toggle-row">
+          <button class="theme-btn" id="themeDarkBtn" data-theme="dark">
+            <span class="theme-btn-icon">🌙</span>
+            <div>
+              <div class="theme-btn-label">Dark Mode</div>
+              <div class="theme-btn-sub">Default dark theme</div>
+            </div>
+          </button>
+          <button class="theme-btn" id="themeLightBtn" data-theme="light">
+            <span class="theme-btn-icon">☀️</span>
+            <div>
+              <div class="theme-btn-label">Light Mode</div>
+              <div class="theme-btn-sub">White, blue &amp; green</div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-title">💱 Currency</div>
+        <p class="form-card-desc">Set the default display currency and USD to PHP exchange rate.</p>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Default Currency</label>
+            <div class="currency-choice-row">
+              <button class="currency-choice-btn" id="setUsdBtn" data-cur="USD">$ USD</button>
+              <button class="currency-choice-btn" id="setPhpBtn" data-cur="PHP">₱ PHP / Peso</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="phpRateInput">Exchange Rate (USD → PHP)</label>
+            <div class="rate-input-row">
+              <span class="rate-prefix">1 USD =</span>
+              <input class="form-input" id="phpRateInput" type="number"
+                     min="1" max="9999" step="0.01" placeholder="56.50" />
+              <span class="rate-suffix">PHP</span>
+            </div>
+            <p class="form-hint">
+              Current: <strong id="currentRateDisplay">—</strong>
+            </p>
+          </div>
+        </div>
+        <div class="form-card-actions">
+          <button class="btn btn-primary" id="saveCurrencyBtn">Save Currency</button>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-title">📞 Contact Information</div>
+        <p class="form-card-desc">Shown on the storefront product detail modal.</p>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="contactPhone">Phone / Mobile</label>
+            <input class="form-input" id="contactPhone" type="tel"
+                   placeholder="+63 912 345 6789" maxlength="30" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="contactEmail">Inquiry Email</label>
+            <input class="form-input" id="contactEmail" type="email"
+                   placeholder="sales@tgpetrol.com" maxlength="254" />
+          </div>
+        </div>
+        <div class="form-card-actions">
+          <button class="btn btn-primary" id="saveContactBtn">Save Contact</button>
+        </div>
+      </div>
+
+      <div class="form-card">
+        <div class="form-card-title">🖼 Store Logo</div>
+        <p class="form-card-desc">Upload your logo directly — it will be stored on Cloudinary and shown in the storefront header.</p>
+        <div class="upload-zone" id="logoZone">
+          <input type="file" id="logoFile"
+                 accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml"
+                 aria-label="Upload store logo" />
+          <div class="upload-zone-icon" aria-hidden="true">🏷️</div>
+          <p class="upload-zone-main"><strong>Click to upload</strong> or drag &amp; drop your logo</p>
+          <p class="upload-zone-hint">PNG, SVG, WEBP recommended — transparent background works best</p>
+          <p class="upload-zone-status" id="logoZoneLabel" aria-live="polite"></p>
+        </div>
+        <div class="progress-bar-wrap" id="logoProgress" hidden>
+          <div class="progress-bar-fill" id="logoProgressFill"></div>
+        </div>
+        <div class="progress-bar-wrap" id="logoProgress" hidden>
+          <div class="progress-bar-fill" id="logoProgressFill"></div>
+        </div>
+        <div id="logoPreviewWrap" hidden style="margin-top:14px">
+          <p class="form-hint" style="margin-bottom:8px">Current logo:</p>
+          <img id="logoPreview" src="" alt="Logo preview" class="logo-preview-img" />
+        </div>
+        <div class="form-card-actions">
+          <button class="btn btn-primary" id="saveLogoBtn">Upload Logo</button>
+          <button class="btn btn-ghost" id="removeLogoBtn">Remove Logo</button>
+        </div>
+      </div>
+    </section>
+
+  </main><!-- /main-content -->
+
+  <!-- ── CONFIRM DELETE DIALOG ── -->
+  <div class="confirm-overlay" id="confirmOverlay"
+       role="dialog" aria-modal="true"
+       aria-labelledby="confirmTitle" hidden>
+    <div class="confirm-box">
+      <div class="confirm-icon" aria-hidden="true">🗑</div>
+      <div class="confirm-title" id="confirmTitle">Delete Product?</div>
+      <div class="confirm-msg"   id="confirmMsg">This action cannot be undone.</div>
+      <div class="confirm-actions">
+        <button class="btn btn-danger" id="confirmYes" style="flex:1">Yes, Delete</button>
+        <button class="btn btn-ghost"  id="confirmNo"  style="flex:1">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TOAST ── -->
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <script type="module" src="/admin/js/auth.js"></script>
+  <script type="module" src="/admin/js/products.js"></script>
+  <script type="module" src="/admin/js/form.js"></script>
+  <script type="module" src="/admin/js/ui.js"></script>
+  <script type="module" src="/admin/js/settings.js"></script>
+</body>
+</html>

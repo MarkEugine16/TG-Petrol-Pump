@@ -1,0 +1,16 @@
+// storage.rules
+// Deploy: firebase deploy --only storage
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Products folder: public read, no client writes
+    match /products/{allPaths=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+    // Deny everything else
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

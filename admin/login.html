@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Admin Login — TG Petrol Pump</title>
+  <script>(function(){var t=localStorage.getItem('tg_theme')||'dark';if(t==='light')document.documentElement.classList.add('light-theme');}());</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/admin/css/admin.css" />
+</head>
+<body class="login-body">
+
+  <div class="login-page">
+    <div class="login-box" role="main">
+
+      <div class="login-logo">
+        <div class="login-logo-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+          </svg>
+        </div>
+        TG Admin
+      </div>
+      <div class="login-subtitle">Secure Admin Panel · TG Petrol Pump Trading</div>
+
+      <div class="login-error" id="loginError" role="alert" aria-live="polite" hidden></div>
+
+      <form id="loginForm" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="loginEmail">Email Address</label>
+          <input class="login-input" id="loginEmail" type="email"
+                 placeholder="admin@tgpetrol.com"
+                 autocomplete="email" required maxlength="254" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="loginPass">Password</label>
+          <input class="login-input" id="loginPass" type="password"
+                 placeholder="••••••••"
+                 autocomplete="current-password" required minlength="6" maxlength="128" />
+        </div>
+        <button class="login-btn" type="submit" id="loginBtn">Sign In →</button>
+      </form>
+
+      <div class="back-link">
+        <a href="/" rel="noopener">← Back to storefront</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/admin/js/auth.js"></script>
+</body>
+</html>
