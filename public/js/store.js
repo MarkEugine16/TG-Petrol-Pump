@@ -8,6 +8,7 @@ import { fetchProducts, fetchProduct } from './api.js';
 import { escHtml, stripHtml, catLabel, showToast } from './ui.js';
 import { initModal, openModal } from './modal.js';
 import { getCurrency, toggleCurrency, fmtCurrency, getPhpRate } from './currency.js';
+import { loadAndApplySettings } from './settings.js';
 
 // ── State ────────────────────────────────────────────────
 let all      = [];
@@ -18,6 +19,8 @@ let sortMode = 'newest';
 
 // ── Boot ─────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
+  // Load settings from Firestore first — applies to ALL devices equally
+  await loadAndApplySettings();
   applyTheme(localStorage.getItem('tg_theme') || 'dark');
   applyLogo(localStorage.getItem('tg_logo_url') || '');
   initModal();

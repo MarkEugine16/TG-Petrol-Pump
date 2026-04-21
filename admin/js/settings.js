@@ -1,6 +1,31 @@
-import { getCurrency, setCurrency, getPhpRate, DEFAULT_PHP_RATE } from './currency.js';
+/**
+ * admin/js/settings.js
+ * Settings page — saves ALL settings to Firestore via PUT /api/settings
+ * so they apply to every visitor on every device, not just this browser.
+ */
+
+import { getCurrency, setCurrency, getPhpRate } from './currency.js';
 import { showToast, navigateTo } from './ui.js';
 import { apiUploadImages } from './api.js';
+
+// ── Save settings to Firestore ────────────────────────────
+async function saveToServer(updates) {
+  const token = localStorage.getItem('tg_admin_token');
+  const res = await fetch('/api/settings', {
+    method:      'PUT',
+    headers:     {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    credentials: 'include',
+    body:        JSON.stringify(updates),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.error || 'Failed to save settings.');
+  }
+  return res.json();
+}
 
 // ── Theme ─────────────────────────────────────────────────
 export function applyTheme(theme) {
@@ -9,51 +34,64 @@ export function applyTheme(theme) {
   window.dispatchEvent(new CustomEvent('themeChange', { detail: theme }));
 }
 
-// ── Sync all settings UI to saved state ───────────────────
+// ── Sync UI to current saved state ───────────────────────
 function syncUI() {
-  const theme  = localStorage.getItem('tg_theme') || 'dark';
-  const cur    = getCurrency();
-  const rate   = getPhpRate();
-  const phone  = localStorage.getItem('tg_contact_phone') || '';
-  const email  = localStorage.getItem('tg_contact_email') || 'sales@tgpetrol.com';
-  const logo   = localStorage.getItem('tg_logo_url') || '';
+  const theme = localStorage.getItem('tg_theme') || 'dark';
+  const cur   = getCurrency();
+  const rate  = getPhpRate();
 
-  // Theme buttons
   document.getElementById('themeDarkBtn')?.classList.toggle('active',  theme === 'dark');
   document.getElementById('themeLightBtn')?.classList.toggle('active', theme === 'light');
-
-  // Currency buttons
   document.getElementById('setUsdBtn')?.classList.toggle('active', cur === 'USD');
   document.getElementById('setPhpBtn')?.classList.toggle('active', cur === 'PHP');
 
-  // Rate
   const rateInput = document.getElementById('phpRateInput');
   if (rateInput) rateInput.value = rate;
   const rateDisplay = document.getElementById('currentRateDisplay');
   if (rateDisplay) rateDisplay.textContent =
     `₱${rate.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
 
-  // Contact
+  const phone = localStorage.getItem('tg_contact_phone') || '';
+  const email = localStorage.getItem('tg_contact_email') || '';
+  const logo  = localStorage.getItem('tg_logo_url') || '';
+
   const phoneEl = document.getElementById('contactPhone');
   const emailEl = document.getElementById('contactEmail');
   if (phoneEl) phoneEl.value = phone;
   if (emailEl) emailEl.value = email;
 
-  // Logo preview
   showLogoPreview(logo);
+}
+
+// ── Load current settings from server on page open ───────
+async function loadCurrentSettings() {
+  try {
+    const res  = await fetch('/api/settings');
+    if (!res.ok) return;
+    const data = await res.json();
+
+    // Sync to localStorage so UI reads them
+    if (data.theme)        localStorage.setItem('tg_theme',         data.theme);
+    if (data.phpRate)      localStorage.setItem('tg_php_rate',      data.phpRate);
+    if (data.currency)     localStorage.setItem('tg_currency',      data.currency);
+    if (data.logoUrl)      localStorage.setItem('tg_logo_url',      data.logoUrl);
+    if (data.contactPhone) localStorage.setItem('tg_contact_phone', data.contactPhone);
+    if (data.contactEmail) localStorage.setItem('tg_contact_email', data.contactEmail);
+
+    if (data.theme)    applyTheme(data.theme);
+    if (data.currency) setCurrency(data.currency);
+    if (data.logoUrl)  applyAdminLogo(data.logoUrl);
+
+  } catch { /* fail silently */ }
+  syncUI();
 }
 
 function showLogoPreview(url) {
   const wrap    = document.getElementById('logoPreviewWrap');
   const preview = document.getElementById('logoPreview');
   if (!wrap || !preview) return;
-  if (url) {
-    preview.src    = url;
-    wrap.hidden    = false;
-  } else {
-    wrap.hidden    = true;
-    preview.src    = '';
-  }
+  if (url) { preview.src = url; wrap.hidden = false; }
+  else     { wrap.hidden = true; preview.src = ''; }
 }
 
 // ── Logo upload ───────────────────────────────────────────
@@ -65,7 +103,6 @@ function setupLogoZone() {
   const label = document.getElementById('logoZoneLabel');
   if (!zone || !input) return;
 
-  // Drag-and-drop
   ['dragenter','dragover'].forEach(e =>
     zone.addEventListener(e, ev => { ev.preventDefault(); zone.classList.add('dragover'); })
   );
@@ -80,8 +117,6 @@ function setupLogoZone() {
     input.files = dt.files;
     onLogoFileSelected();
   });
-
-  // Click-to-upload
   input.addEventListener('change', onLogoFileSelected);
 
   function onLogoFileSelected() {
@@ -89,8 +124,6 @@ function setupLogoZone() {
     if (!file) return;
     logoFile = file;
     if (label) label.textContent = `${file.name} — ready to upload`;
-
-    // Show local preview instantly
     const reader = new FileReader();
     reader.onload = e => showLogoPreview(e.target.result);
     reader.readAsDataURL(file);
@@ -98,36 +131,29 @@ function setupLogoZone() {
 }
 
 async function uploadLogo() {
-  if (!logoFile) {
-    showToast('Please select a logo file first.', 'error');
-    return;
-  }
+  if (!logoFile) { showToast('Please select a logo file first.', 'error'); return; }
 
-  const btn = document.getElementById('saveLogoBtn');
-  if (btn) { btn.disabled = true; btn.textContent = 'Uploading…'; }
-
+  const btn          = document.getElementById('saveLogoBtn');
   const progressWrap = document.getElementById('logoProgress');
   const progressFill = document.getElementById('logoProgressFill');
+  if (btn) { btn.disabled = true; btn.textContent = 'Uploading…'; }
   if (progressWrap) progressWrap.hidden = false;
 
   try {
     const result = await apiUploadImages(
-      'store-logo',
-      [logoFile],
-      (pct) => { if (progressFill) progressFill.style.width = `${pct}%`; }
+      'store-logo', [logoFile],
+      pct => { if (progressFill) progressFill.style.width = `${pct}%`; }
     );
-
     const url = result.urls?.[0];
-    if (!url) throw new Error('No URL returned from upload.');
+    if (!url) throw new Error('No URL returned.');
 
+    // Save to Firestore so ALL visitors see the new logo
+    await saveToServer({ logoUrl: url });
     localStorage.setItem('tg_logo_url', url);
     showLogoPreview(url);
     applyAdminLogo(url);
+    showToast('Logo uploaded and saved for all visitors!', 'success');
 
-    // Notify storefront open in another tab
-    window.dispatchEvent(new StorageEvent('storage', { key: 'tg_logo_url', newValue: url }));
-
-    showToast('Logo uploaded and saved!', 'success');
     logoFile = null;
     const label = document.getElementById('logoZoneLabel');
     if (label) label.textContent = '';
@@ -143,7 +169,6 @@ async function uploadLogo() {
   }
 }
 
-// ── Apply logo in admin sidebar ───────────────────────────
 function applyAdminLogo(url) {
   const brand = document.querySelector('.sidebar-brand');
   if (!brand) return;
@@ -165,24 +190,32 @@ function applyAdminLogo(url) {
 document.addEventListener('DOMContentLoaded', () => {
   if (!document.getElementById('page-settings')) return;
 
-  syncUI();
+  // Load latest settings from server first
+  loadCurrentSettings();
   setupLogoZone();
-
-  // Apply existing logo to sidebar
   applyAdminLogo(localStorage.getItem('tg_logo_url') || '');
 
-  // Also wire the new upload button (label is now "Upload Logo" not "Save Logo")
   document.getElementById('saveLogoBtn')?.addEventListener('click', uploadLogo);
 
-  // Theme
-  document.getElementById('themeDarkBtn')?.addEventListener('click', () => {
-    applyTheme('dark'); syncUI(); showToast('Dark mode applied.', 'success');
+  // Theme buttons — save to Firestore immediately
+  document.getElementById('themeDarkBtn')?.addEventListener('click', async () => {
+    applyTheme('dark');
+    syncUI();
+    try {
+      await saveToServer({ theme: 'dark' });
+      showToast('Dark mode applied to all visitors.', 'success');
+    } catch (e) { showToast(e.message, 'error'); }
   });
-  document.getElementById('themeLightBtn')?.addEventListener('click', () => {
-    applyTheme('light'); syncUI(); showToast('Light mode applied.', 'success');
+  document.getElementById('themeLightBtn')?.addEventListener('click', async () => {
+    applyTheme('light');
+    syncUI();
+    try {
+      await saveToServer({ theme: 'light' });
+      showToast('Light mode applied to all visitors.', 'success');
+    } catch (e) { showToast(e.message, 'error'); }
   });
 
-  // Currency
+  // Currency buttons
   document.getElementById('setUsdBtn')?.addEventListener('click', () => {
     setCurrency('USD'); syncUI();
   });
@@ -190,19 +223,22 @@ document.addEventListener('DOMContentLoaded', () => {
     setCurrency('PHP'); syncUI();
   });
 
-  // Save exchange rate
-  document.getElementById('saveCurrencyBtn')?.addEventListener('click', () => {
+  // Save currency settings — save to Firestore
+  document.getElementById('saveCurrencyBtn')?.addEventListener('click', async () => {
     const rate = parseFloat(document.getElementById('phpRateInput')?.value);
     if (isNaN(rate) || rate <= 0) { showToast('Enter a valid exchange rate.', 'error'); return; }
-    if (rate > 9999) { showToast('Rate seems too high — please check.', 'error'); return; }
+    const cur  = getCurrency();
     localStorage.setItem('tg_php_rate', rate.toFixed(2));
-    window.dispatchEvent(new CustomEvent('currencyChange', { detail: getCurrency() }));
+    window.dispatchEvent(new CustomEvent('currencyChange', { detail: cur }));
     syncUI();
-    showToast(`Rate saved: 1 USD = ₱${rate.toFixed(2)}`, 'success');
+    try {
+      await saveToServer({ currency: cur, phpRate: rate });
+      showToast(`Saved: 1 USD = ₱${rate.toFixed(2)} — applied to all visitors.`, 'success');
+    } catch (e) { showToast(e.message, 'error'); }
   });
 
-  // Contact info
-  document.getElementById('saveContactBtn')?.addEventListener('click', () => {
+  // Contact info — save to Firestore
+  document.getElementById('saveContactBtn')?.addEventListener('click', async () => {
     const phone = document.getElementById('contactPhone')?.value.trim() || '';
     const email = document.getElementById('contactEmail')?.value.trim() || '';
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -210,17 +246,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     localStorage.setItem('tg_contact_phone', phone);
     localStorage.setItem('tg_contact_email', email || 'sales@tgpetrol.com');
-    showToast('Contact info saved.', 'success');
+    try {
+      await saveToServer({ contactPhone: phone, contactEmail: email || 'sales@tgpetrol.com' });
+      showToast('Contact info saved for all visitors.', 'success');
+    } catch (e) { showToast(e.message, 'error'); }
   });
 
   // Remove logo
-  document.getElementById('removeLogoBtn')?.addEventListener('click', () => {
+  document.getElementById('removeLogoBtn')?.addEventListener('click', async () => {
     localStorage.removeItem('tg_logo_url');
     showLogoPreview('');
     applyAdminLogo('');
     logoFile = null;
-    const label = document.getElementById('logoZoneLabel');
-    if (label) label.textContent = '';
-    showToast('Logo removed.', 'success');
+    try {
+      await saveToServer({ logoUrl: '' });
+      showToast('Logo removed.', 'success');
+    } catch (e) { showToast(e.message, 'error'); }
   });
 });
