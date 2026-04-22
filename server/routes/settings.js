@@ -1,3 +1,7 @@
+/**
+ * server/routes/settings.js
+ * Mount at: /api/settings
+ */
 
 'use strict';
 

@@ -1,3 +1,17 @@
+/**
+ * server/controllers/settingsController.js
+ * Store-wide settings persisted in Firestore.
+ *
+ * Document: settings/store  (single document)
+ * Fields:
+ *   theme        'dark' | 'light'
+ *   currency     'USD' | 'PHP'
+ *   phpRate      number
+ *   logoUrl      string (Cloudinary URL)
+ *   contactPhone string
+ *   contactEmail string
+ *   updatedAt    timestamp
+ */
 
 'use strict';
 
