@@ -43,6 +43,7 @@ const authRoutes     = require('./routes/auth');
 const productRoutes  = require('./routes/products');
 const uploadRoutes   = require('./routes/upload');
 const settingsRoutes = require('./routes/settings');
+const { serveStorefront } = require('./controllers/settingsController');
 
 const app = express();
 
@@ -69,6 +70,7 @@ app.use('/api', apiLimiter);
 // ── Static files ──────────────────────────────────────────
 app.use(express.static(path.join(__dirname, '../public'), {
   etag: true, lastModified: true, maxAge: '1h',
+  index: false, // index.html is served dynamically with theme pre-injected
 }));
 app.use('/admin', express.static(path.join(__dirname, '../admin'), {
   etag: true, lastModified: true, maxAge: '10m',
@@ -92,9 +94,9 @@ app.get('/admin', (_req, res) => {
 app.get('/admin/*', (_req, res) => {
   res.sendFile(path.join(__dirname, '../admin/dashboard.html'));
 });
-app.get('*', (_req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
-});
+// Storefront — served dynamically so the correct theme class is
+// injected into <html> before the browser parses any CSS.
+app.get('*', serveStorefront);
 
 // ── Global error handler ──────────────────────────────────
 app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
