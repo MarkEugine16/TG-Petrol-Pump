@@ -39,9 +39,10 @@ const {
   noSqlSanitize,
 } = require('./middleware/security');
 
-const authRoutes    = require('./routes/auth');
-const productRoutes = require('./routes/products');
-const uploadRoutes  = require('./routes/upload');
+const authRoutes     = require('./routes/auth');
+const productRoutes  = require('./routes/products');
+const uploadRoutes   = require('./routes/upload');
+const settingsRoutes = require('./routes/settings');
 
 const app = express();
 
@@ -77,6 +78,7 @@ app.use('/admin', express.static(path.join(__dirname, '../admin'), {
 app.use('/api/auth',     authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/upload',   uploadRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // ── Health check ──────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
